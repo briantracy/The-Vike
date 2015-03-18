@@ -10,12 +10,14 @@
 
 #import "SportSingleton.h"
 #import "SportData.h"
+#import "NSArray+Mapping.h"
+#import "GraphicsHeader.h"
 
 @interface EventsViewController ()
 @property (nonatomic) NSString * sportName;
 @property (nonatomic) UITableView * tableView;
 @property (nonatomic) NSArray * events;
-@property (nonatomic) NSMutableDictionary * dateToGames;
+@property (nonatomic) NSMutableDictionary /* <String, JSON> */ * dateToGames;
 @property (nonatomic) NSMutableArray * dates;
 @end
 
@@ -31,11 +33,12 @@
         self.events = [[SportSingleton sharedData] filteredSportData:name];
         [self sortChronologically];
         
-        for (NSDictionary * dict in self.events) {
-            NSLog(@"%@", dict[@"date"]);
-        }
-        NSLog(@"%d", [self uniqueDates]);
-        NSLog(@"%@", self.events);
+        [self setUpDates];
+        
+        
+        [self setUpDatesToGames];
+        NSLog(@"%@", self.dateToGames);
+        
         
         [self setUpTableView];
     }
@@ -43,9 +46,38 @@
     return self;
 }
 
+- (void)setUpDates
+{
+    self.dates = [NSMutableArray new];
+    for (NSDictionary * game in self.events) {
+        NSString * date = game[@"date"];
+        NSLog(@"DATE IS %@", date);
+        
+        if ([self.dates containsObject:date]) {}
+        else {
+            [self.dates addObject:date];
+        }
+    }
+    NSLog(@"%@", self.dates);
+}
+
+- (void)setUpDatesToGames
+{
+    self.dateToGames = [NSMutableDictionary new];
+    for (NSString * date in [self uniqueDates]) {
+        
+        NSArray * gamesOnDate = [self.events filter:^BOOL(id obj, int index) {
+            return [((NSDictionary *)obj)[@"date"] isEqualToString:date];
+        }];
+        
+        self.dateToGames[date] = gamesOnDate;
+    }
+}
+
 - (void)setUpTableView
 {
-    self.tableView = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds style:UITableViewStylePlain];
+    CGRect rect = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    self.tableView = [[UITableView alloc] initWithFrame:rect style:UITableViewStylePlain];
     self.tableView.backgroundColor = [UIColor colorWithWhite:.7 alpha:.5];
     
     self.tableView.delegate = self;
@@ -53,16 +85,26 @@
     
     [self.view addSubview:self.tableView];
     
+    
+    UIRefreshControl * refresh = [[UIRefreshControl alloc] init];
+    [refresh addTarget:self action:@selector(backButton:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView addSubview:refresh];
+    
+}
+
+- (void)backButton:(id)sender
+{
+    
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    return @"Yo Baller";
+    return self.dates[section];
 }
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [self uniqueDates];
+    return [self uniqueDates].count;
 }
 
 
@@ -70,28 +112,35 @@
 {
     UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     
-    cell.backgroundColor = [UIColor clearColor];
-    cell.textLabel.text = self.events[indexPath.row][@"location"];
+    NSString * date = self.dates[indexPath.section];
     
-    cell.detailTextLabel.text = self.events[indexPath.row][@"date"];
-    cell.detailTextLabel.textColor = [UIColor redColor];
+    NSDictionary * game = self.dateToGames[date][indexPath.row];
+
+    
+    cell.textLabel.text = game[@"location"];
+    cell.detailTextLabel.text = game[@"level"];
+    
     
     return cell;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.events.count;
+    NSString * date = self.dates[section];
+    NSLog(@"%@", date);
+    int games = (int)[(NSArray *)self.dateToGames[date] count];
+    NSLog(@"%d", games);
+    return games;
 }
 
-- (int)uniqueDates
+- (NSSet *)uniqueDates
 {
     NSMutableSet * set = [[NSMutableSet alloc] init];
     
     for (NSDictionary * dict in self.events) {
         [set addObject:dict[@"date"]];
     }
-    return (int)set.count;
+    return [set copy];
 }
 
 - (void)sortChronologically
@@ -108,6 +157,7 @@
         return [date1 compare:date2];
     }];
 }
+
 
 
 @end

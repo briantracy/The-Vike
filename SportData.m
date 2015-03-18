@@ -44,13 +44,18 @@
 {
     const NSTimeInterval delay = 2;
     [self performSelector:@selector(attemptRetrieveData) withObject:nil afterDelay:delay];
+    //[self performSelectorInBackground:@selector(attemptRetrieveData) withObject:nil];
+    //[self performSelectorOnMainThread:@selector(attemptRetrieveData) withObject:nil waitUntilDone:NO];
     
     
 }
 
 - (void)attemptRetrieveData
 {
-    NSString * json = [self.webView stringByEvaluatingJavaScriptFromString:@"(function(){ return document.getElementById('output').innerHTML; })();"];
+    NSString * JavaScript = @"(function(){ return document.getElementById('output').innerHTML; })();";
+
+    NSString * json = [self.webView stringByEvaluatingJavaScriptFromString:JavaScript];
+    NSLog(@"%@ LKJS", json);
     
     
     NSData * jsonData = [json dataUsingEncoding:NSUTF8StringEncoding];
