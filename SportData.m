@@ -24,7 +24,7 @@
 
 - (void)loadData
 {
-    NSURL * url = [NSURL URLWithString:@"http://silicode.us/freeform"];
+    NSURL * url = [NSURL URLWithString:@"https://silicode.us/freeform/"];
     NSURLRequest * request = [NSURLRequest requestWithURL:url];
     
     self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 10, 10)];

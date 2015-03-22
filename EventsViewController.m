@@ -13,6 +13,9 @@
 #import "NSArray+Mapping.h"
 #import "GraphicsHeader.h"
 
+#import <MapKit/MapKit.h>
+#import <CoreLocation/CoreLocation.h>
+
 @interface EventsViewController ()
 @property (nonatomic) NSString * sportName;
 @property (nonatomic) UITableView * tableView;
@@ -41,6 +44,9 @@
         
         
         [self setUpTableView];
+        
+        
+        
     }
     
     return self;
@@ -74,6 +80,42 @@
     }
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CLGeocoder * coder = [[CLGeocoder alloc] init];
+    NSString * address = self.dateToGames[self.dates[indexPath.section]][indexPath.row][@"address"];
+    [coder geocodeAddressString:address completionHandler:^(NSArray *placemarks, NSError *error) {
+        if ([placemarks count] > 0) {
+            CLPlacemark * place = placemarks[0];
+            
+
+            MKPlacemark * placeMark = [[MKPlacemark alloc] initWithPlacemark:place];
+            MKMapItem * mapItem = [[MKMapItem alloc] initWithPlacemark:placeMark];
+            [mapItem setName:@"Swag"];
+
+            NSLog(@"%@", mapItem);
+        
+            
+     
+            
+            
+            
+            //NSDictionary *launchOptions = @{MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving};
+            
+            // Get the "Current User Location" MKMapItem
+            //MKMapItem *currentLocationMapItem = [MKMapItem mapItemForCurrentLocation];
+            
+            // Pass the current location and destination map items to the Maps app
+            // Set the direction mode in the launchOptions dictionary
+            [MKMapItem openMapsWithItems:@[mapItem] launchOptions:nil];
+            
+        }
+        else {
+            NSLog(@"COULD NOT FIND LOCATIONS");
+        }
+    }];
+}
+
 - (void)setUpTableView
 {
     CGRect rect = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -86,9 +128,9 @@
     [self.view addSubview:self.tableView];
     
     
-    UIRefreshControl * refresh = [[UIRefreshControl alloc] init];
-    [refresh addTarget:self action:@selector(backButton:) forControlEvents:UIControlEventValueChanged];
-    [self.tableView addSubview:refresh];
+//    UIRefreshControl * refresh = [[UIRefreshControl alloc] init];
+//    [refresh addTarget:self action:@selector(backButton:) forControlEvents:UIControlEventValueChanged];
+//    [self.tableView addSubview:refresh];
     
 }
 
@@ -117,7 +159,7 @@
     NSDictionary * game = self.dateToGames[date][indexPath.row];
 
     
-    cell.textLabel.text = game[@"location"];
+    cell.textLabel.text = game[@"opponent"];
     cell.detailTextLabel.text = game[@"level"];
     
     
