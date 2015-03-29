@@ -14,12 +14,14 @@
 #import "UILabel+PerfectLabel.h"
 #import "UIFont+AppFonts.h"
 #import "EventsViewController.h"
+#import "SplashViewController.h"
 
 #define NUM_SPORTS ([Sports sportNames].count)
 
 @interface SportsViewController ()
 @property (nonatomic) EventsViewController * eventsViewController;
 @property (nonatomic) UIScrollView * scrollView;
+@property (nonatomic) SplashViewController * splashViewController;
 @end
 
 @implementation SportsViewController
@@ -27,22 +29,61 @@
 - (instancetype)init
 {
     if (self = [super init]) {
+        
+        self.splashViewController = [[SplashViewController alloc] init];
+        
         [self setUpScrollView];
         [self setUpImages];
-        [self setUpLabels];
+        //[self setUpLabels];
     }
     return self;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    NSLog(@"appear");
+    [self initializeNavigation];
+    NSLog(@"NAV CONT%@", self.navigationController);
+}
+
+- (void)viewDidLoad
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(fadeIn) name:@"dismissingSplashVC" object:nil];
+}
+
+- (void)fadeIn
+{
+    NSLog(@"FADING IN");
+    self.view.alpha = 1;
+    self.navigationController.view.alpha = 1;
+}
+
+- (void)initializeNavigation
+{
+
+    self.navigationController.navigationBar.hidden =  YES;
+}
+
+- (void)selectSport
+{
+    NSString * sportName = [[Sports sportNames] objectAtIndex:[self currentPage]];
+    EventsViewController * evc = [[EventsViewController alloc] initWithSportName: sportName];
+    
+    [self.navigationController pushViewController:evc animated:YES];
 }
 
 - (void)setUpScrollView
 {
     self.scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.scrollView.backgroundColor = [UIColor vikingColor] ;
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * NUM_SPORTS, SCREEN_HEIGHT);
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * NUM_SPORTS + SCREEN_WIDTH, SCREEN_HEIGHT);
     
     self.scrollView.pagingEnabled = YES;
     self.scrollView.bounces = NO;
     self.scrollView.indicatorStyle = UIScrollViewIndicatorStyleWhite;
+    
+    self.scrollView.delegate = self;
+    
     
     UISwipeGestureRecognizer * swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(goBack:)];
     swipe.direction = UISwipeGestureRecognizerDirectionDown;
@@ -60,23 +101,32 @@
 
 - (void)viewSport:(UISwipeGestureRecognizer *)gest
 {
+    
+    
     NSLog(@"VIEWING SPORT PAGE = %d", [self currentPage]);
     
-    NSString * sport = [[Sports sportNames] objectAtIndex:[self currentPage]];
+    if ([self currentPage] == 0) return;
     
-    self.modalPresentationStyle = UIModalPresentationCurrentContext;
+    NSString * sport = [[Sports sportNames] objectAtIndex:[self currentPage] - 1];
     
-    self.eventsViewController = [[EventsViewController alloc] initWithSportName:sport];
-    self.eventsViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    self.eventsViewController.view.alpha = 0;
-    [UIView animateWithDuration:1 animations:^{
-        [self.view addSubview:self.eventsViewController.view];
-        self.eventsViewController.view.alpha = 1.0;
-        
-        
-    } completion:^(BOOL finished) {
-        //[evc.view removeFromSuperview];
-    }];
+    EventsViewController * evc = [[EventsViewController alloc] initWithSportName:sport];
+    
+    [self.navigationController pushViewController:evc animated:YES];
+    
+    
+//    self.modalPresentationStyle = UIModalPresentationCurrentContext;
+//    
+//    self.eventsViewController = [[EventsViewController alloc] initWithSportName:sport];
+//    self.eventsViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
+//    self.eventsViewController.view.alpha = 0;
+//    [UIView animateWithDuration:1 animations:^{
+//        [self.view addSubview:self.eventsViewController.view];
+//        self.eventsViewController.view.alpha = 1.0;
+//        
+//        
+//    } completion:^(BOOL finished) {
+//        //[evc.view removeFromSuperview];
+//    }];
     
 }
 
@@ -88,14 +138,16 @@
     return page;
 }
 
+
+
 - (void)goBack:(UISwipeGestureRecognizer *)gest
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)viewDidLoad
+-(BOOL)automaticallyAdjustsScrollViewInsets
 {
-
+    return NO;
 }
 
 - (void)setUpLabels
@@ -122,6 +174,10 @@
 
 - (void)setUpImages
 {
+    UIView * vikingView = self.splashViewController.view;
+    [self addView:vikingView onPage:0];
+    
+    
     for (NSString * sportName in [Sports sportNames]) {
         
         //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
@@ -139,7 +195,7 @@
             
             // Now the image will have been loaded and decoded and is ready to rock for the main thread
             //dispatch_sync(dispatch_get_main_queue(), ^{
-                [self addView:view onPage:(int)[[Sports sportNames] indexOfObject:sportName]];
+                [self addView:view onPage:(int)[[Sports sportNames] indexOfObject:sportName] + 1];
             //});
         //});
         

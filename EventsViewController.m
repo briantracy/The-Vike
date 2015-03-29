@@ -30,7 +30,7 @@
 {
     if (self = [super init]) {
         NSLog(@"creating events view controller with sport: %@", name);
-        self.view.backgroundColor = [UIColor clearColor];
+        self.view.backgroundColor = [UIColor whiteColor];
         self.sportName = name;
         
         self.events = [[SportSingleton sharedData] filteredSportData:name];
@@ -57,14 +57,12 @@
     self.dates = [NSMutableArray new];
     for (NSDictionary * game in self.events) {
         NSString * date = game[@"date"];
-        NSLog(@"DATE IS %@", date);
         
         if ([self.dates containsObject:date]) {}
         else {
             [self.dates addObject:date];
         }
     }
-    NSLog(@"%@", self.dates);
 }
 
 - (void)setUpDatesToGames
@@ -96,7 +94,7 @@
             NSLog(@"%@", mapItem);
         
             
-     
+            
             
             
             
@@ -116,14 +114,47 @@
     }];
 }
 
+- (void)addNoSportIndicator
+{
+    UIImage * vikeImage = [UIImage imageNamed:@"VikingHead.png"];
+    CGRect frame = CGRectMake(0, 0, SCREEN_WIDTH_OVER(2), SCREEN_WIDTH_OVER(2));
+    UIImageView * vikeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH_OVER(3) * 2, SCREEN_WIDTH_OVER(3) * 2)];
+    CGPoint center = CGPointMake(CGRectGetMidX(self.view.frame), CGRectGetMidY(self.view.frame));
+    
+    vikeImageView.image = vikeImage;
+    vikeImageView.center = center;
+    
+    [self.view addSubview:vikeImageView];
+    
+    CGRect labelFrame = CGRectMake(0, 0, SCREEN_WIDTH_OVER(4) * 3, 80);
+    UILabel * label = [[UILabel alloc] initWithFrame:labelFrame];
+    label.text = @"Sport Not In Season";
+    [label sizeToFit];
+    CGFloat yCoord = vikeImageView.frame.origin.y + vikeImageView.frame.size.height + 20;
+    label.center = CGPointMake(CGRectGetMidX(self.view.frame), yCoord);
+    
+    
+    
+    [self.view addSubview:label];
+    
+}
+
 - (void)setUpTableView
 {
+    if (self.events.count == 0) {
+        NSLog(@"EMPTY SPORT");
+        [self addNoSportIndicator];
+        return;
+        
+    }
+    
     CGRect rect = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     self.tableView = [[UITableView alloc] initWithFrame:rect style:UITableViewStylePlain];
-    self.tableView.backgroundColor = [UIColor colorWithWhite:.7 alpha:.5];
+    self.tableView.backgroundColor = [UIColor clearColor];
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.tableFooterView = [UIView new];
     
     [self.view addSubview:self.tableView];
     
@@ -150,6 +181,7 @@
 }
 
 
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell * cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
@@ -169,9 +201,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSString * date = self.dates[section];
-    NSLog(@"%@", date);
     int games = (int)[(NSArray *)self.dateToGames[date] count];
-    NSLog(@"%d", games);
     return games;
 }
 
@@ -199,6 +229,12 @@
         return [date1 compare:date2];
     }];
 }
+
+- (BOOL)prefersStatusBarHidden
+{
+    return YES;
+}
+
 
 
 

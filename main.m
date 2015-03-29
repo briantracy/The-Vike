@@ -19,11 +19,31 @@ int main(int argc, char * argv[]) {
         NSArray * gt12 = [nums filter:^BOOL(id obj, int index) {
             return [(NSNumber *)obj intValue] > 12;
         }];
-        
-        NSLog(@"%@", @{@1:@"#"}[@2]);
-        
         NSLog(@"%@", gt12);
         
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+        
+        NSArray * timesTwo = [[nums map:^id(id obj, int index) {
+            return @([obj intValue] * 2);
+        }]
+                              filter:^BOOL(id obj, int index) {
+                                  return [obj intValue] % 3 == 0;
+        }];
+        NSLog(@"%@", timesTwo);
+        
+        int retval = -1;
+        
+        @try {
+            retval = UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+
+        }
+        @catch (NSException *exception) {
+            NSLog(@"Uncaught exception: %@", exception.description);
+            NSLog(@"Stack trace: %@", [exception callStackSymbols]);
+            @throw exception;
+        }
+        @finally {
+            
+        }
+        
     }
 }

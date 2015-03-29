@@ -12,21 +12,29 @@
 @implementation Sports
 
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        
+    }
+    return self;
+}
+
 + (NSArray *)sportNames
 {
+    
+    
     return @[
-             
                 @"lacrosse",
                 @"baseball",
                 @"crosscountry",
                 @"soccer",
                 @"track",
-                @"softball"
-            
-        
+                @"softball",
+                @"tennis",
+                @"waterpolo",
+                @"football"
              ];
-    
-    
 }
 
 

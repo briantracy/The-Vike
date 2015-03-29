@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SportsViewController : UIViewController
+@interface SportsViewController : UIViewController <UIScrollViewDelegate>
 
 - (instancetype)init;
 
+- (void)initializeNavigation;
 @end

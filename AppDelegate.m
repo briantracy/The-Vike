@@ -10,6 +10,7 @@
 
 #import "SplashViewController.h"
 #import "SportSingleton.h"
+#import "SportsViewController.h"
 
 @interface AppDelegate ()
 
@@ -20,18 +21,41 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [SportSingleton loadSharedData];
+
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.window.backgroundColor = [UIColor yellowColor];
+    self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
-    [SportSingleton loadSharedData];
     
-    SplashViewController * svc = [[SplashViewController alloc] init];
-    self.window.rootViewController = svc;
+    //SplashViewController * svc = [[SplashViewController alloc] init];
+    //self.window.rootViewController = svc;
+    
+    
+    
+    SportsViewController * svc = [[SportsViewController alloc] init];
+    [svc initializeNavigation];
+    
+    UINavigationController * navigation = [[UINavigationController alloc] initWithRootViewController:svc];
+    
+    
+    self.window.rootViewController = navigation ;
+    
+    
+    
+    //[self performSelector:@selector(presentSplashView) withObject:nil afterDelay:0.1];
     
     
     // Override point for customization after application launch.
     return YES;
+}
+
+- (void)presentSplashView
+{
+    [self.window.rootViewController presentViewController:[SplashViewController new] animated:NO completion:^{
+        
+    }];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

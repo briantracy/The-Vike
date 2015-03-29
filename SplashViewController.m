@@ -14,6 +14,7 @@
 #import "GraphicsHeader.h"
 #import "SilicodeViewController.h"
 #import "SportsViewController.h"
+#import "AppDelegate.h"
 
 @implementation SplashViewController
 
@@ -27,27 +28,12 @@
         [self setUpViking];
         [self setUpButtons];
         [self setUpSilicodeLogo];
-        [self setUpSwipeUp];
         
     }
     return self;
 }
 
-- (void)swipeUp:(UISwipeGestureRecognizer *)swipe
-{
-    SportsViewController * svc = [[SportsViewController alloc] init];
-    [self presentViewController:svc animated:YES completion:^{
-        
-    }];
-    
-}
 
-- (void)setUpSwipeUp
-{
-    UISwipeGestureRecognizer * swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeUp:)];
-    swipe.direction = UISwipeGestureRecognizerDirectionUp;
-    [self.view addGestureRecognizer:swipe];
-}
 
 - (void)setUpMainTitle
 {
@@ -137,7 +123,6 @@
 {
     SilicodeViewController * svc = [[SilicodeViewController alloc] init];
     [self presentViewController:svc animated:YES completion:^{
-        [svc dismissViewControllerAnimated:YES completion:nil];
     }];
     NSLog(@"Logo tapped");
 }
