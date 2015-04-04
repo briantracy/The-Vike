@@ -7,8 +7,9 @@
 //
 
 #import "Sports.h"
-#import <UIKit/UIWebView.h>
-
+#import "NSArray+Mapping.h"
+#import "SportSingleton.h"
+#import "SportData.h"
 @implementation Sports
 
 
@@ -25,6 +26,7 @@
     
     
     return @[
+             
                 @"lacrosse",
                 @"baseball",
                 @"crosscountry",
@@ -34,9 +36,26 @@
                 @"tennis",
                 @"waterpolo",
                 @"football"
+                
              ];
 }
 
++ (BOOL)sportIsInSeason:(NSString *)sport
+{
+    return [[[SportSingleton sharedData] sportData] filter:^BOOL(id obj, int index) {
+        if (obj != [NSNull null] && [obj[@"sport"] respondsToSelector:@selector(isEqualToString:)]) {
+            return [obj[@"sport"] isEqualToString:sport];
+        }
+        return NO;
+    }].count != 0;
+}
+
++ (NSArray *)sortedSportNames
+{
+    return [[self sportNames] sortedArrayWithOptions:NSSortStable usingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return [self sportIsInSeason:obj2] - [self sportIsInSeason:obj1];
+    }];
+}
 
 
 @end

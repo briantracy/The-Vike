@@ -17,13 +17,11 @@ static SportData * sportData;
 {
     sportData = [[SportData alloc] init];
     [sportData loadData];
-    NSLog(@"loaded shared data: %@", sportData);
 }
 
 
 + (SportData *)sharedData
 {
-    NSLog(@"requesting shared data");
     @synchronized(self) {
         return sportData;
     }

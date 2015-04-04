@@ -31,7 +31,13 @@
     self.webView.delegate = self;
     
     
-    [self.webView loadRequest:request];
+    NSURL * tempURL = [NSURL URLWithString:@"https://silicode.us/freeform/backup.txt"];
+    NSData * data = [NSData dataWithContentsOfURL:tempURL];
+    NSLog(@"data= %@", data);
+    
+    self.json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    
+    //[self.webView loadRequest:request];
 
 }
 

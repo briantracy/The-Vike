@@ -12,6 +12,8 @@
 #import "SportData.h"
 #import "NSArray+Mapping.h"
 #import "GraphicsHeader.h"
+#import "Sports.h"
+#import "SingleEventViewController.h"
 
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
@@ -39,12 +41,14 @@
         [self setUpDates];
         
         
+        
         [self setUpDatesToGames];
         NSLog(@"%@", self.dateToGames);
         
         
         [self setUpTableView];
         
+        NSLog(@"sorted sport names%@", [Sports sortedSportNames]);
         
         
     }
@@ -80,38 +84,15 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CLGeocoder * coder = [[CLGeocoder alloc] init];
-    NSString * address = self.dateToGames[self.dates[indexPath.section]][indexPath.row][@"address"];
-    [coder geocodeAddressString:address completionHandler:^(NSArray *placemarks, NSError *error) {
-        if ([placemarks count] > 0) {
-            CLPlacemark * place = placemarks[0];
-            
+    NSString * date = self.dates[indexPath.section];
+    NSDictionary * game = self.dateToGames[date][indexPath.row];
+    
+    SingleEventViewController * svc = [[SingleEventViewController alloc] initWithGame:game];
+    
+    [self.navigationController pushViewController:svc animated:YES];
+    
 
-            MKPlacemark * placeMark = [[MKPlacemark alloc] initWithPlacemark:place];
-            MKMapItem * mapItem = [[MKMapItem alloc] initWithPlacemark:placeMark];
-            [mapItem setName:@"Swag"];
 
-            NSLog(@"%@", mapItem);
-        
-            
-            
-            
-            
-            
-            //NSDictionary *launchOptions = @{MKLaunchOptionsDirectionsModeKey : MKLaunchOptionsDirectionsModeDriving};
-            
-            // Get the "Current User Location" MKMapItem
-            //MKMapItem *currentLocationMapItem = [MKMapItem mapItemForCurrentLocation];
-            
-            // Pass the current location and destination map items to the Maps app
-            // Set the direction mode in the launchOptions dictionary
-            [MKMapItem openMapsWithItems:@[mapItem] launchOptions:nil];
-            
-        }
-        else {
-            NSLog(@"COULD NOT FIND LOCATIONS");
-        }
-    }];
 }
 
 - (void)addNoSportIndicator

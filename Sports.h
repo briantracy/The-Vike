@@ -14,5 +14,6 @@
 
 + (NSArray *)sportNames;
 
++ (NSArray *)sortedSportNames;
 
 @end
