@@ -28,7 +28,7 @@
         [self setUpViking];
         [self setUpButtons];
         [self setUpSilicodeLogo];
-        
+
     }
     return self;
 }
@@ -37,7 +37,7 @@
 
 - (void)setUpMainTitle
 {
-    NSString * mainTitle      = @"THE VIKE";
+    NSString * mainTitle  = @"THE VIKE";
     const CGFloat kTop    = 25.0f;
     const CGFloat kInset  = 10.0f;
     const CGFloat kHeight = 100;
@@ -129,7 +129,7 @@
 
 - (BOOL)prefersStatusBarHidden
 {
-    return !!"Absolutely im amm";
+    return ! ! "I was absolutely in the right" ;
 }
 
 

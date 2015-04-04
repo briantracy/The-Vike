@@ -32,10 +32,14 @@
     
     
     NSURL * tempURL = [NSURL URLWithString:@"https://silicode.us/freeform/backup.txt"];
-    NSData * data = [NSData dataWithContentsOfURL:tempURL];
+    NSError * error;
+
+    NSData * data = [NSData dataWithContentsOfURL:tempURL options:NSDataReadingUncached error:&error];
     NSLog(@"data= %@", data);
     
-    self.json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
+    self.json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+    
+    NSLog(@"%@", error);
     
     //[self.webView loadRequest:request];
 

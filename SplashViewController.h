@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SplashViewController : UIViewController
+@interface SplashViewController : UIViewController 
 
 - (instancetype)init;
 

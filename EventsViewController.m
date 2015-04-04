@@ -87,11 +87,13 @@
     NSString * date = self.dates[indexPath.section];
     NSDictionary * game = self.dateToGames[date][indexPath.row];
     
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     SingleEventViewController * svc = [[SingleEventViewController alloc] initWithGame:game];
     
     [self.navigationController pushViewController:svc animated:YES];
     
-
+    
 
 }
 
@@ -213,7 +215,7 @@
 
 - (BOOL)prefersStatusBarHidden
 {
-    return YES;
+    return ! ! "Grab that cash with both hands and make a stash" ;
 }
 
 
