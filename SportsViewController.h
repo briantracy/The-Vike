@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SportsViewController : UIViewController <UIScrollViewDelegate>
+#import "JumpToSportDelegate.h"
+
+@interface SportsViewController : UIViewController <UIScrollViewDelegate, JumpToSportDelegate>
 
 - (instancetype)init;
 

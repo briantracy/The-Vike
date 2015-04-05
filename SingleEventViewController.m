@@ -29,6 +29,7 @@
         self.game = game;
         [self createTitle];
         [self createData];
+        [self addTakeMeHere];
     }
     return self;
 }
@@ -109,6 +110,24 @@
     
     }
 }
+
+
+- (void)addTakeMeHere
+{
+    UIButton * take = [UIButton buttonWithType:UIButtonTypeSystem];
+    [take setTitle:@"Take Me Here" forState:UIControlStateNormal];
+    [take addTarget:self action:@selector(takeMe:) forControlEvents:UIControlEventTouchUpInside];
+    
+    CGRect frame = CGRectMake(0, 0, SCREEN_WIDTH_OVER(2), 80);
+    CGPoint center = CGPointMake(CGRectGetMidX(self.view.frame), SCREEN_HEIGHT_OVER(8) * 7);
+    
+    [take setFrame:frame];
+    [take setCenter:center];
+    
+    [self.view addSubview:take];
+}
+
+
 
 - (void)takeMe:(UIButton *)sender
 {

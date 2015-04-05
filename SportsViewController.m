@@ -15,6 +15,7 @@
 #import "UIFont+AppFonts.h"
 #import "EventsViewController.h"
 #import "SplashViewController.h"
+#import "JumpViewController.h"
 
 #define NUM_SPORTS ([Sports sportNames].count)
 
@@ -22,6 +23,7 @@
 @property (nonatomic) EventsViewController * eventsViewController;
 @property (nonatomic) UIScrollView * scrollView;
 @property (nonatomic) SplashViewController * splashViewController;
+@property (nonatomic) JumpViewController * jumpViewController;
 @end
 
 @implementation SportsViewController
@@ -31,12 +33,28 @@
     if (self = [super init]) {
         
         self.splashViewController = [[SplashViewController alloc] init];
+        self.jumpViewController = [[JumpViewController alloc] init];
+        self.jumpViewController.jumpDelegate = self;
         
         [self setUpScrollView];
         [self setUpImages];
         //[self setUpLabels];
     }
     return self;
+}
+
+- (void)jumpToSport:(NSString *)sport
+{
+    [self.scrollView scrollRectToVisible:[self rectForSport:sport] animated:YES];
+}
+
+- (CGRect)rectForSport:(NSString *)sport
+{
+    int index = (int)[[Sports sportNames] indexOfObject:sport];
+    NSLog(@"index = %d", index    );
+    CGFloat offSet = (SCREEN_WIDTH * 2) + (SCREEN_WIDTH * index);
+    
+    return CGRectMake(offSet, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -76,7 +94,7 @@
 {
     self.scrollView = [[UIScrollView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.scrollView.backgroundColor = [UIColor vikingColor] ;
-    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * NUM_SPORTS + SCREEN_WIDTH, SCREEN_HEIGHT);
+    self.scrollView.contentSize = CGSizeMake(self.scrollView.frame.size.width * NUM_SPORTS + (2 * SCREEN_WIDTH), SCREEN_HEIGHT);
     
     self.scrollView.pagingEnabled = YES;
     self.scrollView.bounces = NO;
@@ -102,12 +120,11 @@
 - (void)viewSport:(UISwipeGestureRecognizer *)gest
 {
     
-    
     NSLog(@"VIEWING SPORT PAGE = %d", [self currentPage]);
     
-    if ([self currentPage] == 0) return;
+    if ([self currentPage] < 2) return;
     
-    NSString * sport = [[Sports sportNames] objectAtIndex:[self currentPage] - 1];
+    NSString * sport = [[Sports sportNames] objectAtIndex:[self currentPage] - 2];
     
     EventsViewController * evc = [[EventsViewController alloc] initWithSportName:sport];
     
@@ -174,9 +191,14 @@
 
 - (void)setUpImages
 {
-    UIView * vikingView = self.splashViewController.view;
-    [self addView:vikingView onPage:0];
+    UIView * todayView = self.jumpViewController.view;
+    [self addView:todayView onPage:0];
     
+    UIView * vikingView = self.splashViewController.view;
+    [self addView:vikingView onPage:1];
+    
+    
+    int offset = 2;
     
     for (NSString * sportName in [Sports sportNames]) {
         
@@ -195,7 +217,7 @@
             
             // Now the image will have been loaded and decoded and is ready to rock for the main thread
             //dispatch_sync(dispatch_get_main_queue(), ^{
-                [self addView:view onPage:(int)[[Sports sportNames] indexOfObject:sportName] + 1];
+                [self addView:view onPage:(int)[[Sports sportNames] indexOfObject:sportName] + offset];
             //});
         //});
         
