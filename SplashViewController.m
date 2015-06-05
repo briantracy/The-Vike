@@ -15,6 +15,11 @@
 #import "SilicodeViewController.h"
 #import "SportsViewController.h"
 #import "AppDelegate.h"
+#import "CBView.h"
+
+@interface SplashViewController ()
+@property (nonatomic) CBView * cbview;
+@end
 
 @implementation SplashViewController
 
@@ -22,7 +27,7 @@
 {
     if (self = [super init]) {
         self.view.backgroundColor = [UIColor whiteColor];
-        
+    
         [self setUpMainTitle];
         [self setUpSubTitle];
         [self setUpViking];
@@ -90,6 +95,8 @@
     view.center = center;
     
     [self.view addSubview:view];
+    
+    [self setUpSpeechBubbleWithVikingView:view];
 }
 
 - (void)setUpButtons
@@ -131,6 +138,18 @@
 {
     return ! ! "I was absolutely in the right" ;
 }
+
+- (void)setUpSpeechBubbleWithVikingView:(UIView *) view
+{
+    float viewBottom = view.frame.size.height+view.frame.origin.y;
+    self.cbview = [[CBView alloc] initWithFrame:CGRectInset(CGRectMake(0, viewBottom-20, SCREEN_WIDTH, 500),10,0)];
+    self.cbview.backgroundColor = [UIColor clearColor];
+    [self.cbview updateText];
+    [self.view addSubview:self.cbview];
+}
+
+
+
 
 
 @end

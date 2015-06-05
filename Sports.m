@@ -35,27 +35,64 @@
                 @"softball",
                 @"tennis",
                 @"waterpolo",
-                @"football"
+                @"football",
+                @"swimminganddiving",
+                @"volleyball",
+                @"wrestling",
+                @"golf"
+                
                 
              ];
 }
 
-+ (BOOL)sportIsInSeason:(NSString *)sport
-{
-    return [[[SportSingleton sharedData] sportData] filter:^BOOL(id obj, int index) {
-        if (obj != [NSNull null] && [obj[@"sport"] respondsToSelector:@selector(isEqualToString:)]) {
-            return [obj[@"sport"] isEqualToString:sport];
-        }
-        return NO;
-    }].count != 0;
-}
-
 + (NSArray *)sortedSportNames
 {
-    return [[self sportNames] sortedArrayWithOptions:NSSortStable usingComparator:^NSComparisonResult(id obj1, id obj2) {
-        return [self sportIsInSeason:obj2] - [self sportIsInSeason:obj1];
-    }];
+    NSMutableArray * arr = [NSMutableArray array];
+    
+    NSDictionary * seasonToSports = @{
+                                      @"Spring" : @[@"Lacrosse", @"Baseball", @"Softball", @"Tennis", @"Track", @"Swimming and Diving"],
+                                      @"Fall" : @[@"Football", @"Tennis", @"Cross Country", @"Water Polo"],
+                                      @"Winter" : @[@"Soccer", @"Basketball", @"Wrestling", @"Volleyball"],
+                                      };
+    
+    NSDictionary * seasonToOrderOfSeasons = @{
+                                              @"Spring" : @[@"Spring", @"Fall", @"Winter"],
+                                              @"Fall" : @[@"Fall", @"Winter", @"Spring"],
+                                              @"Winter" : @[@"Winter", @"Spring", @"Fall"],
+                                              };
+    
+    NSString * currentSeason = [self getSeason];
+    
+    for (NSString * season in seasonToOrderOfSeasons[currentSeason]) {
+        
+        for (NSString * sportName in seasonToSports[season]) {
+            NSString * s = [[sportName lowercaseString] stringByReplacingOccurrencesOfString:@" " withString:@""];
+            
+            if (![arr containsObject:s]) {
+                [arr addObject:s];
+            }
+            
+        }
+    }
+    
+    
+    return [arr copy];
 }
+
+
++ (NSString *)getSeason {
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSInteger dayOfYear = [gregorian ordinalityOfUnit:NSCalendarUnitDay
+                                               inUnit:NSCalendarUnitYear forDate:[NSDate date]];
+    if (dayOfYear<32) return @"Winter";
+    if (dayOfYear<230) return @"Spring";
+    if (dayOfYear<305) return @"Fall";
+    return @"Winter";
+    
+    
+}
+
+
 
 
 @end

@@ -17,7 +17,7 @@
 #import "SplashViewController.h"
 #import "JumpViewController.h"
 
-#define NUM_SPORTS ([Sports sportNames].count)
+#define NUM_SPORTS ([Sports sortedSportNames].count)
 
 @interface SportsViewController ()
 @property (nonatomic) EventsViewController * eventsViewController;
@@ -50,7 +50,7 @@
 
 - (CGRect)rectForSport:(NSString *)sport
 {
-    int index = (int)[[Sports sportNames] indexOfObject:sport];
+    int index = (int)[[Sports sortedSportNames] indexOfObject:sport];
     NSLog(@"index = %d", index    );
     CGFloat offSet = (SCREEN_WIDTH * 2) + (SCREEN_WIDTH * index);
     
@@ -84,7 +84,7 @@
 
 - (void)selectSport
 {
-    NSString * sportName = [[Sports sportNames] objectAtIndex:[self currentPage]];
+    NSString * sportName = [[Sports sortedSportNames] objectAtIndex:[self currentPage]];
     EventsViewController * evc = [[EventsViewController alloc] initWithSportName: sportName];
     
     [self.navigationController pushViewController:evc animated:YES];
@@ -124,7 +124,7 @@
     
     if ([self currentPage] < 2) return;
     
-    NSString * sport = [[Sports sportNames] objectAtIndex:[self currentPage] - 2];
+    NSString * sport = [[Sports sortedSportNames] objectAtIndex:[self currentPage] - 2];
     
     EventsViewController * evc = [[EventsViewController alloc] initWithSportName:sport];
     
@@ -172,7 +172,7 @@
     const CGFloat height = 50.0f;
     
     int idx = 0;
-    for (NSString * sportName in [Sports sportNames]) {
+    for (NSString * sportName in [Sports sortedSportNames]) {
         UILabel * label = [[UILabel alloc] init];
         
         CGSize size = CGSizeMake(SCREEN_WIDTH, height);
@@ -200,7 +200,7 @@
     
     int offset = 2;
     
-    for (NSString * sportName in [Sports sportNames]) {
+    for (NSString * sportName in [Sports sortedSportNames]) {
         
         //dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
             UIImage * img = [UIImage imageNamed:[NSString stringWithFormat:@"%@.png", sportName]];
@@ -217,7 +217,7 @@
             
             // Now the image will have been loaded and decoded and is ready to rock for the main thread
             //dispatch_sync(dispatch_get_main_queue(), ^{
-                [self addView:view onPage:(int)[[Sports sportNames] indexOfObject:sportName] + offset];
+                [self addView:view onPage:(int)[[Sports sortedSportNames] indexOfObject:sportName] + offset];
             //});
         //});
         
